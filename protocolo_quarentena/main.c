@@ -1,15 +1,38 @@
 #include <stdio.h>
 #include "utils.h"
+#include "pilha.h"
 
 int main(void) {
     imprimir_separador();
     printf("   PROTOCOLO DE QUARENTENA\n");
-    printf("   Estacao Espacial NEXUS-7\n");
+    printf("   Testando sistema de historico\n");
     imprimir_separador();
 
-    animar_texto("\nSistema iniciado...", 50);
-    animar_texto("Verificando protocolos de seguranca...", 40);
-    animar_texto("Acesso concedido.", 60);
+    Pilha historico;
+    pilha_inicializar(&historico);
+
+    animar_texto("\nJogador entra na cena 1...", 40);
+    pilha_empilhar(&historico, 1);
+    pilha_imprimir(&historico);
+
+    animar_texto("\nJogador vai para cena 3...", 40);
+    pilha_empilhar(&historico, 3);
+    pilha_imprimir(&historico);
+
+    animar_texto("\nJogador vai para cena 5...", 40);
+    pilha_empilhar(&historico, 5);
+    pilha_imprimir(&historico);
+
+    animar_texto("\nJogador aperta VOLTAR...", 40);
+    pilha_desempilhar(&historico);
+    pilha_imprimir(&historico);
+
+    animar_texto("\nJogador aperta VOLTAR de novo...", 40);
+    pilha_desempilhar(&historico);
+    pilha_imprimir(&historico);
+
+    pilha_liberar(&historico);
+    printf("\nMemoria liberada com sucesso.\n");
 
     return 0;
 }
