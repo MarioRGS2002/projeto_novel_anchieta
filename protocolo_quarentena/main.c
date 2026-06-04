@@ -2,6 +2,7 @@
 #include <string.h>
 #include "utils.h"
 #include "jogo.h"
+#include "salvar.h"   /* <-- NOVO: funcoes de salvar/carregar */
 
 void inicializar_cenas(Cena *cenas) {
 
@@ -181,7 +182,7 @@ void inicializar_cenas(Cena *cenas) {
         "  |  ACESSO RESTRITO  |\n"
         "  '-------------------'\n");
     strcpy(cenas[7].texto,
-        "O Deck A esta tomado por uma névoa esverdeada.\n"
+        "O Deck A esta tomado por uma nevoa esverdeada.\n"
         "Voce ve corpos no chao. Eles nao se movem.\n"
         "No centro da sala, um terminal ainda esta ligado.\n"
         "Na tela: coordenadas de uma nave de resgate.\n"
@@ -255,7 +256,7 @@ void inicializar_cenas(Cena *cenas) {
         "Voce chega a nave de escape.\n"
         "O motor liga. Voce se afasta da estacao.\n"
         "Pelas janelas, ve a NEXUS-7 encolhendo no espaco.\n"
-        "Voce esta livre. Mas algo coça no seu braco.\n"
+        "Voce esta livre. Mas algo coca no seu braco.\n"
         "Uma marca vermelha que nao estava la antes.\n"
         "Voce esperou tempo demais no Deck A.\n"
         "\n*** FIM - VOCE FUGIU, MAS A QUE CUSTO? ***");
@@ -285,14 +286,84 @@ void inicializar_cenas(Cena *cenas) {
     strcpy(cenas[11].termo_codex, "");
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
     Cena cenas[TOTAL_CENAS];
     EstadoJogo estado;
     char entrada[10];
     int escolha;
 
+    /*
+     * Primeira coisa a fazer: resolver o caminho do save.csv.
+     * argv[0] e o caminho do proprio executavel — passamos para
+     * salvar_inicializar() que extrai a pasta e monta o caminho
+     * completo. A partir daqui, salvar/carregar usam esse caminho.
+     *
+     * O (void)argc evita warning de "parametro nao utilizado".
+     */
+    (void)argc;
+    salvar_inicializar(argv[0]);
+
     inicializar_cenas(cenas);
     jogo_inicializar(&estado);
+
+    /*
+     * MENU INICIAL — exibido antes do jogo comecar.
+     *
+     * Verificamos PRIMEIRO se existe um save com arquivo_save_existe().
+     * Isso evita mostrar a opcao "Continuar" quando nao ha nada salvo,
+     * o que confundiria o jogador.
+     *
+     * A logica e simples:
+     *   - Se nao ha save: so mostra "Novo Jogo" e "Sair".
+     *   - Se ha save: mostra as tres opcoes.
+     * O do-while repete o menu se o jogador digitar algo invalido.
+     */
+    {
+        int save_existe = arquivo_save_existe();
+        char op[10];
+        int opcao_valida = 0;
+
+        do {
+            LIMPAR_TELA();
+            imprimir_separador();
+            printf("   PROTOCOLO DE QUARENTENA\n");
+            printf("   NEXUS-7 // Sistema de Navegacao\n");
+            imprimir_separador();
+            printf("\n");
+            printf("   1. Novo Jogo\n");
+            if (save_existe) {
+                printf("   2. Continuar\n");
+            }
+            printf("   3. Sair\n");
+            printf("\n");
+            imprimir_separador();
+            printf("   Opcao: ");
+            fgets(op, sizeof(op), stdin);
+
+            if (op[0] == '1') {
+                /* Novo jogo: estado ja foi inicializado na cena 1 acima */
+                opcao_valida = 1;
+
+            } else if (op[0] == '2' && save_existe) {
+                /*
+                 * Continuar: chama carregar_jogo() para reconstruir
+                 * a pilha e a BST a partir do arquivo save.csv.
+                 * O estado (cena atual, historico, codex) e sobrescrito
+                 * com os dados salvos.
+                 */
+                carregar_jogo(&estado);
+                printf("\n  Retomando na cena %d...\n", estado.id_cena_atual);
+                DORMIR_MS(1200);
+                opcao_valida = 1;
+
+            } else if (op[0] == '3') {
+                /* Sair direto do menu inicial, sem entrar no jogo */
+                jogo_liberar(&estado);
+                return 0;
+            }
+
+        } while (!opcao_valida);
+    }
 
     while (estado.jogo_ativo) {
         Cena *cena_atual = jogo_buscar_cena(cenas, estado.id_cena_atual);
@@ -311,7 +382,7 @@ int main(void) {
 
         jogo_exibir_cena(cena_atual);
 
-        /* Jogo termina se a cena nao tiver escolhas */
+        /* Jogo termina se a cena nao tiver escolhas (cenas de fim) */
         if (cena_atual->num_escolhas == 0) {
             printf("\n  Pressione ENTER para sair...\n");
             getchar();
@@ -329,6 +400,12 @@ int main(void) {
             jogo_exibir_codex(&estado);
 
         } else if (entrada[0] == 'S' || entrada[0] == 's') {
+            /*
+             * NOVO — Salva antes de sair.
+             * A unica linha nova aqui e a chamada a salvar_jogo().
+             * Todo o resto e igual ao original.
+             */
+            salvar_jogo(&estado);
             printf("\n  Jogo encerrado. Ate logo, astronauta.\n");
             estado.jogo_ativo = 0;
 
