@@ -1,5 +1,7 @@
 # 🚀 Protocolo de Quarentena
 
+![Capa do Jogo](cover.png)
+
 **Ano 2157. Estação Espacial NEXUS-7. Órbita de Europa.**  
 Você acorda sozinho. As luzes estão vermelhas. A tripulação sumiu.  
 E uma mensagem em loop ecoa pelos corredores:
