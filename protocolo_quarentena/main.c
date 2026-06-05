@@ -333,8 +333,10 @@ int main(int argc, char *argv[]) {
             printf("   1. Novo Jogo\n");
             if (save_existe) {
                 printf("   2. Continuar\n");
+                printf("   3. Sair\n");
+            } else {
+                printf("   2. Sair\n");
             }
-            printf("   3. Sair\n");
             printf("\n");
             imprimir_separador();
             printf("   Opcao: ");
@@ -356,7 +358,7 @@ int main(int argc, char *argv[]) {
                 DORMIR_MS(1200);
                 opcao_valida = 1;
 
-            } else if (op[0] == '3') {
+            } else if (op[0] == '3' || (!save_existe && op[0] == '2')) {
                 /* Sair direto do menu inicial, sem entrar no jogo */
                 jogo_liberar(&estado);
                 return 0;
