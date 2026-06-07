@@ -21,7 +21,7 @@ Cena *jogo_buscar_cena(Cena *cenas, int id) {
 }
 
 void jogo_exibir_cena(Cena *cena) {
-    LIMPAR_TELA();
+    transicao_cena();
     imprimir_separador();
     printf("  %s\n", cena->titulo);
     imprimir_separador();

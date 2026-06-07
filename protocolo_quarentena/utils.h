@@ -20,5 +20,6 @@
 
 void animar_texto(const char *texto, int delay_ms);
 void imprimir_separador(void);
+void transicao_cena(void); /*Transicao de tela*/
 
 #endif

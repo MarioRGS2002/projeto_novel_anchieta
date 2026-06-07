@@ -15,3 +15,12 @@ void animar_texto(const char *texto, int delay_ms) {
 void imprimir_separador(void) {
     printf("=================================\n");
 }
+
+void transicao_cena(void) {
+    int i;
+    for (i = 0; i < 20; i++) {
+        printf("  ################################\n");
+        DORMIR_MS(18);
+    }
+    LIMPAR_TELA();
+}
