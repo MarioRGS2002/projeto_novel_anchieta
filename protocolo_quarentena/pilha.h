@@ -18,13 +18,13 @@ typedef struct {
 
 /* funcoes que a pilha vai fazer*/
 
-void  pilha_inicializar(Pilha *p);
-void  pilha_empilhar(Pilha *p, int id_cena);
+void  pilha_inicializar(Pilha *p);/*Declara a função que prepara a pilha para uso*/
+void  pilha_empilhar(Pilha *p, int id_cena);/*Declara a função que adiciona uma cena ao histórico*/
 int   pilha_desempilhar(Pilha *p);
 int   pilha_topo(Pilha *p);
 int   pilha_vazia(Pilha *p);
 void  pilha_liberar(Pilha *p);
-void  pilha_imprimir(Pilha *p);
+void  pilha_imprimir(Pilha *p);/*APENAS PARA TESTES*/
 
 #endif
 
